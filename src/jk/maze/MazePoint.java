@@ -3,7 +3,9 @@ package jk.maze;
 import java.awt.Point;
 import java.util.ArrayList;
 
-public class MazePoint extends Point {
+import jk.maze.output.Square;
+
+public class MazePoint extends Point implements Square {
 
 	private static final long serialVersionUID = 1L; 
 	

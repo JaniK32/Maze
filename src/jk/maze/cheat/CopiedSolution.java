@@ -6,7 +6,8 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
-import jk.maze.MazePoint;
+import jk.maze.output.Printer;
+import jk.maze.output.Square;
 
 /**
  * Algortihm is taken from page : https://www.baeldung.com/java-solve-maze
@@ -24,9 +25,9 @@ public class CopiedSolution {
 			Maze maze = new Maze("c:\\temp\\maze-task-first_(2).txt");
 			
 			CopiedSolution solver = new CopiedSolution();
-			List<Coordinate> coordinates = solver.solve(maze);
+			List<Square> coordinates = solver.solve(maze);
 
-			printResult(maze.getArray(), coordinates);
+			Printer.printResult(maze.getArray(), coordinates);
 			
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -34,8 +35,8 @@ public class CopiedSolution {
 
 	}
 
-	private List<Coordinate> backtrackPath(Coordinate cur) {
-		List<Coordinate> path = new ArrayList<>();
+	private List<Square> backtrackPath(Coordinate cur) {
+		List<Square> path = new ArrayList<>();
 	    Coordinate iter = cur;
 
 	    while (iter != null) {
@@ -47,7 +48,7 @@ public class CopiedSolution {
 	}
 
 
-	public List<Coordinate> solve(Maze maze) {
+	public List<Square> solve(Maze maze) {
 	    LinkedList<Coordinate> nextToVisit  = new LinkedList<>();
 	    Coordinate start = maze.getEntry();
 	    
@@ -81,37 +82,5 @@ public class CopiedSolution {
 	        }
 	    }
 	    return  Collections.emptyList();
-	}
-	
-	public static void printResult(MazePoint [][] points, List<Coordinate> route) {
-		for (int i=0;i<points[0].length;i++) {
-        	for (int j=0;j<points.length;j++) {
-        		MazePoint m = points[j][i];
-        		if (route.contains(m))
-        			p(". ");
-        		else if (m.isValidPathMember())
-        			p("  ");
-        		else if (m.isWall())
-        			p("# ");
-        		else if (m.isExit())
-        			p("E ");
-        		else if (m.isConnectedToExit() && !m.isConnectedToStart())
-        			p("  ");
-        		else if (m.isPath() && !m.isConnectedToExit())
-        			p("  ");
-        		else if (m.isStart())
-        			p("^ ");
-            }
-        	pl("");
-        }
-		pl("steps: " + route.size());
-	}
-	
-	public static void p(Object o) {
-		System.out.print(o);
-	}
-	
-	public static void pl(Object o) {
-		System.out.println(o);
 	}
 }

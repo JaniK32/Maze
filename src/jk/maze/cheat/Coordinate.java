@@ -3,8 +3,11 @@ package jk.maze.cheat;
 import java.awt.Point;
 
 import jk.maze.MazePoint;
+import jk.maze.output.Square;
 
-public class Coordinate extends Point {
+public class Coordinate extends Point implements Square {
+
+	private static final long serialVersionUID = 1L;
 
 	public Coordinate parent;
 	

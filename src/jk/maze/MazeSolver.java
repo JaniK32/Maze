@@ -7,6 +7,9 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 
+import jk.maze.output.Printer;
+import jk.maze.output.Square;
+
 /**
  * Some kind of maze solving application.
  * It doesn't always find a route and probably never the 
@@ -31,20 +34,20 @@ public class MazeSolver {
 			
 			ArrayList<Point> exits = getHeightWidthAndExits(args);
 	        
-	        p("lines " + height + " columns " + width + " exits " + exits.size());
-	    	pl("");
+	        Printer.p("lines " + height + " columns " + width + " exits " + exits.size());
+	        Printer.pl("");
 	    	
 			int selectedExit = 0;
 			BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
 			while ((selectedExit = askExitNumber(reader, exits.size())) > 0) {
-				pl("steps " + resolveRoute(exits, selectedExit-1) + "\n");
+				resolveRoute(exits, selectedExit-1);
 			}
 			reader.close();
 		}
 		catch (Exception e) {
 			e.printStackTrace();
 		}
-		pl("finished");
+		Printer.pl("finished");
 	}
 
 	public static String getPathToFile(String[] args) {
@@ -55,17 +58,20 @@ public class MazeSolver {
 	}
 	
 	public static int askExitNumber(BufferedReader reader, int exitCount) throws IOException {
-		pl("Give index of exit, or 0 for quit please.\n");
-		int selection = Integer.parseInt(reader.readLine());
-		while ( selection > exitCount || selection < 0) {
-			pl("Number is not valid.\n");
+		Printer.pl("Give index of exit, or 0 for quit please.\n");
+		int selection = -1;
+		while ( (selection = readInput(reader)) > exitCount || selection < 0) {
+			Printer.pl("Number is not valid.\n");
+		}
+		return selection;
+	}
+	
+	public static int readInput (BufferedReader reader) throws IOException {
+		int selection = -1;
+		if (reader != null) {
 			try {
 				selection = Integer.parseInt(reader.readLine());
 			} catch (NumberFormatException e) {
-				selection = exitCount +1;
-			} catch (IOException e) {
-				e.printStackTrace();
-				System.exit(1);
 			}
 		}
 		return selection;
@@ -111,9 +117,9 @@ public class MazeSolver {
 		
         MazePoint selectedExit = points[exit.x][exit.y];
 
-        ArrayList<MazePoint> route = buildRoute(selectedExit, startPoint);
+        ArrayList<Square> route = buildRoute(selectedExit, startPoint);
         
-        printResult(points, route);
+        Printer.printResult(points, route);
         
 		return route.size();
 	}
@@ -175,10 +181,10 @@ public class MazeSolver {
 	 * @param toStartPoint
 	 * @return
 	 */
-	public static ArrayList<MazePoint> buildRoute(MazePoint fromExitPoint, Point toStartPoint) {
+	public static ArrayList<Square> buildRoute(MazePoint fromExitPoint, Point toStartPoint) {
 		MazePoint previousPoint = null;
 		MazePoint exit = fromExitPoint;
-		ArrayList<MazePoint> route = new ArrayList<>();
+		ArrayList<Square> route = new ArrayList<>();
 		route.add(exit);
 		
         for (int i = 0;i<maxPathLength; i++) {
@@ -186,11 +192,11 @@ public class MazeSolver {
         	fromExitPoint = fromExitPoint.getMostValidNeighbour(exit, toStartPoint);
         	
         	if (fromExitPoint == null) {
-        		pl("route is not found\n");
+        		Printer.pl("route is not found\n");
         		break;
         	}
         	else if (fromExitPoint.isStart()) {
-        		pl("route is found\n");
+        		Printer.pl("route is found\n");
         		break;
         	}
 
@@ -202,37 +208,5 @@ public class MazeSolver {
         	previousPoint = fromExitPoint;        	
         }
         return route;
-	}
-	
-	public static void printResult(MazePoint [][] points, ArrayList<MazePoint> route) {
-		for (int i=0;i<points[0].length;i++) {
-        	for (int j=0;j<points.length;j++) {
-        		MazePoint m = points[j][i];
-        		if (route.contains(m))
-        			p(". ");
-        		else if (m.isValidPathMember())
-        			p("  ");
-        		else if (m.isWall())
-        			p("# ");
-        		else if (m.isExit())
-        			p("E ");
-        		else if (m.isConnectedToExit() && !m.isConnectedToStart())
-        			p("  ");
-        		else if (m.isPath() && !m.isConnectedToExit())
-        			p("  ");
-        		else if (m.isStart())
-        			p("^ ");
-            }
-        	pl("");
-        }
-	}
-	
-	public static void p(Object o) {
-		System.out.print(o);
-	}
-	
-	public static void pl(Object o) {
-		System.out.println(o);
-	}
-	
+	}	
 }
