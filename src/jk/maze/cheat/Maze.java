@@ -4,22 +4,20 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import jk.maze.MazePoint;
+import jk.maze.MazeProperties;
 
 public class Maze {
 	
-	// for first maze
-	int width = 37;
-	int height = 19;
-
-	// for second maze
-	//int width = 38;
-	//int height = 20;
+	int width = 0;
+	int height = 0;
 	
 	MazePoint [][] array;
 	Coordinate startPoint;
 	
-	public Maze(String filePath) throws IOException{
-		array = fillMazeArray(filePath);
+	public Maze(MazeProperties mazeProperties) throws IOException{
+		array = fillMazeArray(mazeProperties);
+		width = mazeProperties.width;
+		height = mazeProperties.height;
 	}
 
 	public MazePoint[][] getArray() {
@@ -54,12 +52,12 @@ public class Maze {
 		return (array[(int)x][(int)y].isExit() || array[(int)x][(int)y-1].isExit() || array[(int)x+1][(int)y].isExit());
 	}
 
-	public MazePoint [][] fillMazeArray (String filePath) throws IOException {
+	public MazePoint [][] fillMazeArray (MazeProperties mazeProperties) throws IOException {
 		
-		MazePoint [][] points = new MazePoint[width][height];
+		MazePoint [][] points = new MazePoint[mazeProperties.width][mazeProperties.height];
 			String line = null;
 			int lineCounter = 0;
-	        BufferedReader br = new BufferedReader(new FileReader(filePath));
+	        BufferedReader br = new BufferedReader(new FileReader(mazeProperties.filePath));
 	
 	        MazePoint mazePoint = null;
 	       

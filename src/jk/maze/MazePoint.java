@@ -74,15 +74,6 @@ public class MazePoint extends Point implements Square {
 	public void setStart(boolean start) {
 		this.start = start;
 	}
-
-	/*
-	 * public boolean isNexto(MazePoint mazePoint) { if (x == mazePoint.x &&
-	 * Math.abs(y - mazePoint.y) == 1) return true;
-	 * 
-	 * if (y == mazePoint.y && Math.abs(x - mazePoint.x) == 1) return true;
-	 * 
-	 * return false; }
-	 */
 	
 	public void addNeighbour(MazePoint mazePoint) {
 		if (mazePoint.isExit() && isPath()) {

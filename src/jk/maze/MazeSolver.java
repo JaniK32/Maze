@@ -22,25 +22,21 @@ import jk.maze.output.Square;
  * @author janik
  *
  */
-public class MazeSolver {
+public class MazeSolver extends BaseMazeApp {
 
-	private static int height = 0, width = 0, maxPathLength= 150;
-	private static String filePath = ".\\Mazes\\maze-task-first_(2).txt"; // c:\\temp
-	//private static String filePath = "c:\\temp\\maze-task-second_(2).txt";
-	
 	public static void main(String[] args) throws IOException {
 		try {
-			filePath = getPathToFile(args);
+			String filePath = getPathToFile(args);
 			
-			ArrayList<Point> exits = getHeightWidthAndExits(args);
+			MazeProperties mazeProperties = getMazeProperties(filePath);
 	        
-	        Printer.p("lines " + height + " columns " + width + " exits " + exits.size());
+	        Printer.p("lines " + mazeProperties.height + " columns " + mazeProperties.width + " exits " + mazeProperties.exits.size());
 	        Printer.pl("");
 	    	
 			int selectedExit = 0;
 			BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
-			while ((selectedExit = askExitNumber(reader, exits.size())) > 0) {
-				resolveRoute(exits, selectedExit-1);
+			while ((selectedExit = askExitNumber(reader, mazeProperties.exits.size())) > 0) {
+				resolveRoute(mazeProperties, selectedExit-1);
 			}
 			reader.close();
 		}
@@ -50,13 +46,6 @@ public class MazeSolver {
 		Printer.pl("finished");
 	}
 
-	public static String getPathToFile(String[] args) {
-		if (args != null && args.length >0 && args[0] != null && args[0].length()>0)
-			return args[0];
-		
-		return filePath;
-	}
-	
 	public static int askExitNumber(BufferedReader reader, int exitCount) throws IOException {
 		Printer.pl("Give index of exit, or 0 for quit please.\n");
 		int selection = -1;
@@ -76,44 +65,13 @@ public class MazeSolver {
 		}
 		return selection;
 	}
-	
-	public static ArrayList<Point> getHeightWidthAndExits(String[] args) throws IOException {
-	
-		String line = null;
-		int lineCounter = 0;
-		int columnCounter = 0;
-		ArrayList<Point> exits = new ArrayList<>();
 		
-        BufferedReader br = new BufferedReader(new FileReader(filePath));
-
-        while (null != ( line = br.readLine())) {
-        	if (columnCounter == 0)
-        		columnCounter = line.length();
-
-        	lineCounter++;
-
-        	if (line.indexOf('E')>-1) {
-        		int exitXCoordinate = 0;
-        		int exitYCoordinate = lineCounter;
-        		while (line.indexOf('E',exitXCoordinate)>0) {
-        			exitXCoordinate = line.indexOf('E',exitXCoordinate)+1;
-        			exits.add(new Point(exitXCoordinate -1, exitYCoordinate));
-        		}
-        	}
-        }
-        br.close();
-        
-        height= lineCounter;
-        width = columnCounter;
-        
-        return exits;
-	}
+	public static int resolveRoute(MazeProperties mazeProperties, int exitIndex) throws IOException {
+		MazePoint [][] points = new MazePoint[mazeProperties.width][mazeProperties.height];
 	
-	public static int resolveRoute(ArrayList<Point> exits, int exitIndex) throws IOException {
-		MazePoint [][] points = new MazePoint[width][height];
-	
-		Point startPoint = fillMazeArray(points,exits);
-		Point exit = exits.get(exitIndex);
+		Point startPoint = fillMazeArray(points,mazeProperties);
+		
+		Point exit = mazeProperties.exits.get(exitIndex);
 		
         MazePoint selectedExit = points[exit.x][exit.y];
 
@@ -124,11 +82,11 @@ public class MazeSolver {
 		return route.size();
 	}
 
-	public static Point fillMazeArray (MazePoint [][] points, ArrayList<Point> exits) throws IOException {
+	public static Point fillMazeArray (MazePoint [][] points, MazeProperties mazeProperties) throws IOException {
 		
 		String line = null;
 		int lineCounter = 0;
-        BufferedReader br = new BufferedReader(new FileReader(filePath));
+        BufferedReader br = new BufferedReader(new FileReader(mazeProperties.filePath));
 
         Point startPoint = null;
         MazePoint mazePoint = null;
